@@ -51,6 +51,6 @@ class GithubPR(object):
     def close(self):
         self.gh.close()
 
-    def create_comment(self, file, comment):
+    def create_comment(self, file, comment, review_by):
         last_commit = self.pr.get_commits()[self.pr.commits - 1]
-        self.pr.create_issue_comment("ReviewBuddy:\n" + comment)
+        self.pr.create_issue_comment(review_by + ":\n" + comment)
