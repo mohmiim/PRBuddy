@@ -14,48 +14,39 @@ class ChangeRephraser(object):
             self.chat = Ollama(model="llama3.2")
         else:
             self.chat = ChatOpenAI(temperature=0, model_name='gpt-4', streaming=True)
-        self.prompt = [
-            ("system", """\
-             Act as a service given the changes done to a software project in github, it will return a description of 
-             these changes in Markdown format to be used as a Pull Request description.
-             The description should have a title of up to 6 words summarizing the changes, followed by up to 2 
-             sections one tilted "Logic changes" and one titled "Test changes" the logic changes section will contain a 
-             subsection for each file that is not a test file titled with the file name each of these sub sections will 
-             contain a bullet list summarizing the important changes in this file and their reason do not include more than 3 bullets.
-             The Test changes section will be included only if there are test files and its contents will follow the same format as the Logic Section.
-             The description should be in Markdown format. do not include any thing in the response other than markdown.
-             """),
-            ("user", "{input}")
-        ]
 
         template_str = """\
         describe the changes done to a software project in github, the description of 
              these changes should be in Markdown format to be used as a Pull Request description.
-             The description should follow the provided description sample if it is not empty otherwise it should have a
-             title of up to 6 words summarizing the changes, followed by up to 2 sections one tilted "Logic changes" and
-             one titled "Test changes" the logic changes section will contain a subsection for each file that is not a 
-             test file titled with the file name each of these sub sections will contain a bullet list summarizing the 
-             important changes in this file and their reason do not include more than 3 bullets. The Test changes 
-             section will be included only if there are test files and its contents will follow the same format as the 
-             Logic Section. The description should be in Markdown format. do not include any thing in the response 
+             The description should follow the provided description sample. Do not include any thing in the response 
              other than markdown.
              The changes are: {change}
              Description Sample: {sample}
         """
-        self.rephrase_template = PromptTemplate(input_variables=["change","sample"],
-                                           template=template_str)
+        self.rephrase_template = PromptTemplate(input_variables=["change", "sample"],
+                                                template=template_str)
 
-        self.prompt_template = ChatPromptTemplate.from_messages(self.prompt)
-        self.chain = self.prompt_template | self.chat | StrOutputParser()
+        # check if the file description_template exists
+        # if it does, load it
+        self.description_template = ""
+        try:
+            with open("description_template", "r") as f:
+                self.description_template = f.read()
+        except:
+            pass
 
     def convert(self, text):
         if self.DEBUG:
-            print(self.prompt_template1)
-        #out = self.chain.invoke(text)
-        formated_template = self.rephrase_template.format(change= text, sample = "")
-        out = self.chat.invoke(formated_template)
-        print(formated_template)
+            print(self.rephrase_template)
+        # out = self.chain.invoke(text)
+        formatted_template = self.rephrase_template.format(change=text, sample=self.description_template)
+        if self.DEBUG:
+            print(formatted_template)
+        out = self.chat.invoke(formatted_template)
         if self.DEBUG:
             for key, value in out:
                 print(key + " ==> " + str(value))
-        return out
+        # check if out is a String
+        if isinstance(out, str):
+            return out
+        return out.content
