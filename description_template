@@ -1,0 +1,17 @@
+## Summary of the Changes
+
+## Logic Changes
+
+### src/Misc/BranchAClass.java
+* The entire file has been removed.
+
+### src/Misc/FCA.java
+* Removed unnecessary white spaces and lines.
+* Changed the `done` variable in the `Result` class to be final.
+* Simplified the `findShared` function by removing unnecessary conditions.
+
+## Test Changes
+
+### src/Misc/TestSumNew.java
+* This is a new file added to the project.
+* It contains tests for method foo and bar in the `Sum` class.
