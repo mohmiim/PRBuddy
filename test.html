@@ -1,13 +1,33 @@
 <!DOCTYPE html>
-<html>
-<body style="font-family:Arial;text-align:center;margin-top:50px">
-  <h2 id="msg"></h2>
-  <script>
-    const params = new URLSearchParams(window.location.search);
-    const rowId = params.get('row_id');
-    const vote = params.get('vote');
-    document.getElementById('msg').innerText =
-      `You clicked "${vote}" on row ID ${rowId}`;
-  </script>
-</body>
-</html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Silent relay</title>
+<script>
+(async () => {
+  const p = new URLSearchParams(location.search);
+  const rowId = p.get('row_id');
+  const vote  = p.get('vote');
+  const api   = p.get('api'); // optional; if present we POST to it
+
+  // Optional: console log for your browser devtools
+  console.log("QS click:", { rowId, vote, api });
+
+  if (api && rowId && vote) {
+    try {
+      await fetch(api, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ row_id: rowId, vote })
+      });
+    } catch (e) { /* swallow errors, we’re just fire-and-forget */ }
+  }
+
+  // Try to close quickly (most browsers allow closing a tab opened by a user gesture)
+  setTimeout(() => { window.close(); }, 100);
+
+  // Fallback: if the browser blocks close, show a tiny message and a back link
+  setTimeout(() => {
+    document.body.innerHTML =
+      '<div style="font-family:system-ui;margin:2rem;text-align:center">Done. You can close this tab.<br><a href="javascript:history.back()">Back</a></div>';
+  }, 300);
+})();
+</script>
