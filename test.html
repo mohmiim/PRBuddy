@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body style="font-family:Arial;text-align:center;margin-top:50px">
+  <h2 id="msg"></h2>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const rowId = params.get('row_id');
+    const vote = params.get('vote');
+    document.getElementById('msg').innerText =
+      `You clicked "${vote}" on row ID ${rowId}`;
+  </script>
+</body>
+</html>
