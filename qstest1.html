@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add Two Numbers</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; padding: 24px; }
+    .row { margin-bottom: 12px; }
+    label { display: block; margin-bottom: 6px; }
+    input { padding: 8px; width: 240px; max-width: 100%; }
+    button { padding: 8px 14px; cursor: pointer; }
+    #result { margin-top: 12px; font-weight: 600; }
+    .error { color: #b00020; }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <label for="a">First value</label>
+    <input id="a" type="number" step="any" placeholder="Enter first number" />
+  </div>
+  <div class="row">
+    <label for="b">Second value</label>
+    <input id="b" type="number" step="any" placeholder="Enter second number" />
+  </div>
+  <div class="row">
+    <button id="addBtn" type="button">Add</button>
+  </div>
+  <div id="result" aria-live="polite"></div>
+
+  <script>
+    (function () {
+      const aEl = document.getElementById('a');
+      const bEl = document.getElementById('b');
+      const btn = document.getElementById('addBtn');
+      const resultEl = document.getElementById('result');
+
+      function showResult(msg, isError) {
+        resultEl.textContent = msg;
+        resultEl.className = isError ? 'error' : '';
+      }
+
+      function addValues() {
+        const a = aEl.value.trim();
+        const b = bEl.value.trim();
+        const n1 = a === '' ? 0 : Number(a);
+        const n2 = b === '' ? 0 : Number(b);
+        if (Number.isNaN(n1) || Number.isNaN(n2)) {
+          showResult('Please enter valid numbers.', true);
+          return;
+        }
+        const sum = n1 + n2;
+        showResult('Result: ' + sum, false);
+      }
+
+      btn.addEventListener('click', addValues);
+      // Allow pressing Enter from either input to trigger Add
+      [aEl, bEl].forEach((el) => el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addValues();
+      }));
+    })();
+  </script>
+</body>
+</html>
